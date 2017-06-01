@@ -6,15 +6,15 @@
     <title>$title$</title>
     <authors>Joseph Anderson</authors>
     <owners>Joseph Anderson</owners>
+	<projectUrl>https://github.com/JKAnderson/LtxParser</projectUrl>
     <!--
 	<licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
-    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
     <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
 	-->
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Parser for the STALKER series' pseudo-ini .ltx format.</description>
-    <releaseNotes>Test release lol</releaseNotes>
-    <copyright>Copyright 2017</copyright>
+    <description>C# library for loading .ltx files from the STALKER series </description>
+    <releaseNotes>First actual release</releaseNotes>
+    <copyright>Copyright © 2017</copyright>
     <tags>stalker ltx .ltx</tags>
   </metadata>
 </package>
