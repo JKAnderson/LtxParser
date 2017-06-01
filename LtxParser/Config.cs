@@ -1,14 +1,12 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace LtxParser
 {
-    public class Config
+    public class Config : IEnumerable<Section>
     {
         /// <summary>
         /// Parse a standard .ltx tree.
@@ -63,7 +61,7 @@ namespace LtxParser
         }
 
         private ConfigMode mode;
-        private Dictionary<string, Section> config = new Dictionary<string, Section>();
+        private Dictionary<string, Section> sections = new Dictionary<string, Section>();
         private string rootDir, vanillaRootDir, currentSection;
         private bool blockMode = false;
         private string blockField, blockValue;
@@ -99,18 +97,7 @@ namespace LtxParser
         {
             get
             {
-                return config[section.ToLower()];
-            }
-        }
-
-        /// <summary>
-        /// A collection of all sections in this config. Use for iterating.
-        /// </summary>
-        public Dictionary<string, Section>.ValueCollection Sections
-        {
-            get
-            {
-                return config.Values;
+                return sections[section.ToLower()];
             }
         }
 
@@ -121,7 +108,7 @@ namespace LtxParser
         /// <returns>True if it is present, else false.</returns>
         public bool ContainsSection(string section)
         {
-            return config.ContainsKey(section.ToLower());
+            return sections.ContainsKey(section.ToLower());
         }
 
         private string[] readFile(string subPath)
@@ -151,7 +138,7 @@ namespace LtxParser
                     if (rawLine == "END")
                     {
                         blockMode = false;
-                        config[currentSection][blockField] = blockValue;
+                        sections[currentSection][blockField] = blockValue;
                     }
                     else
                     {
@@ -177,24 +164,28 @@ namespace LtxParser
                     Match sectionMatch = sectionRx.Match(rawLine);
                     string section = sectionMatch.Groups["section"].Value.ToLower();
                     string inheritance = sectionMatch.Groups["inherits"].Value;
-                    if (!config.ContainsKey(section))
-                        config[section] = new Section(section);
+                    if (!sections.ContainsKey(section))
+                        sections[section] = new Section(section);
                     else
-                        // Duplicate section
-                        throw null;
-                    currentSection = section;
+                    {
+                        throw new DuplicateSectionException(
+                            string.Format("Duplicate section found: [{0}]", section));
+                    }
                     foreach (Match inherit in listRx.Matches(inheritance))
                     {
                         string inheritSection = inherit.Value;
-                        if (config.ContainsKey(inheritSection))
+                        if (sections.ContainsKey(inheritSection))
                         {
-                            foreach (string field in config[inheritSection].Fields)
-                                config[currentSection][field] = config[inheritSection][field];
+                            foreach (string field in sections[inheritSection])
+                                sections[section][field] = sections[inheritSection][field];
                         }
                         else
-                            // Section not found
-                            throw null;
+                        {
+                            throw new InheritedSectionNotFoundException(
+                                string.Format("Base section [{0}] inherits missing section [{1}].", section, inheritSection));
+                        }
                     }
+                    currentSection = section;
                 }
                 else if (fieldRx.IsMatch(rawLine))
                 {
@@ -208,18 +199,33 @@ namespace LtxParser
                         blockValue = "";
                     }
                     else if (currentSection != null)
-                        config[currentSection][field] = value;
+                        sections[currentSection][field] = value;
                     else if (mode == ConfigMode.CustomData)
                         Default[field] = value;
                     else
-                        // Loose field before sections
-                        throw null;
+                    {
+                        throw new OrphanedFieldException(
+                            string.Format("Loose field found before sections: {0} = {1}", field, value));
+                    }
                 }
                 else
                 {
-                    throw null;
+                    throw new LtxFormatException(
+                        string.Format("Unrecognized line format: {0}", rawLine));
                 }
             }
+        }
+
+        public IEnumerator<Section> GetEnumerator()
+        {
+            yield return Default;
+            foreach (Section section in sections.Values)
+                yield return section;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

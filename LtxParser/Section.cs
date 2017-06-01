@@ -1,13 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace LtxParser
 {
-    public class Section
+    public class Section : IEnumerable<string>
     {
         private static readonly Regex listRx = new Regex(@"[^\s,]+");
 
@@ -38,39 +36,106 @@ namespace LtxParser
         }
 
 
+        #region Reading-as-type functions
+        private static bool toBool(string value)
+        {
+            value = value.ToLower();
+            if (value == "true" || value == "1")
+                return true;
+            else if (value == "false" || value == "0")
+                return false;
+            else
+                throw new FormatException("Boolean string must be 'true', 'false', '0', or '1'.");
+        }
 
-        public double GetDouble(string field)
+        /// <summary>
+        /// Parse a boolean value.
+        /// </summary>
+        public bool GetBool(string field)
+        {
+            return toBool(fields[field]);
+        }
+
+        /// <summary>
+        /// Parse a comma/whitespace-separated list of boolean values.
+        /// </summary>
+        public List<bool> GetBools(string field)
+        {
+            List<bool> list = new List<bool>();
+            foreach (string value in Regex.Split(fields[field], @"[,\s]+"))
+                list.Add(toBool(value));
+            return list;
+        }
+
+        // I'm still calling it "float" for the sake of consistency with xray
+        /// <summary>
+        /// Parse a floating point value.
+        /// </summary>
+        public double GetFloat(string field)
         {
             return Convert.ToDouble(fields[field]);
         }
 
-        public int GetInt(string field)
-        {
-            return Convert.ToInt16(fields[field]);
-        }
-
-        public List<double> GetDoubles(string field)
+        /// <summary>
+        /// Parse a comma/whitespace-separated list of floating point values.
+        /// </summary>
+        public List<double> GetFloats(string field)
         {
             List<double> list = new List<double>();
-            foreach (Match match in listRx.Matches(fields[field]))
-                list.Add(Convert.ToDouble(match.Value));
+            foreach (string value in Regex.Split(fields[field], @"[,\s]+"))
+                list.Add(Convert.ToDouble(value));
             return list;
         }
 
+        /// <summary>
+        /// Parse an integer value.
+        /// </summary>
+        public int GetInt(string field)
+        {
+            return Convert.ToInt32(fields[field]);
+        }
+
+        /// <summary>
+        /// Parse a comma/whitespace-separated list of integer values.
+        /// </summary>
+        public List<int> GetInts(string field)
+        {
+            List<int> list = new List<int>();
+            foreach (string value in Regex.Split(fields[field], @"[,\s]+"))
+                list.Add(Convert.ToInt32(value));
+            return list;
+        }
+
+        // Might as well just use the Section indexer directly but whatever dude, you do you
+        /// <summary>
+        /// Parse a string value.
+        /// </summary>
+        public string GetString(string field)
+        {
+            return fields[field];
+        }
+
+        /// <summary>
+        /// Parse a comma/whitespace-separated list of string values.
+        /// </summary>
         public List<string> GetStrings(string field)
         {
             List<string> list = new List<string>();
-            foreach (Match match in listRx.Matches(fields[field]))
-                list.Add(match.Value);
+            foreach (string value in Regex.Split(fields[field], @"[,\s]+"))
+                list.Add(value);
             return list;
         }
+        #endregion
 
-        public Dictionary<string, string>.KeyCollection Fields
+        public IEnumerator<string> GetEnumerator()
         {
-            get
-            {
-                return fields.Keys;
-            }
+            foreach (string field in fields.Keys)
+                yield return field;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
