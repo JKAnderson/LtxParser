@@ -13,7 +13,7 @@
 	-->
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>C# library for loading .ltx files from the STALKER series </description>
-    <releaseNotes>First actual release</releaseNotes>
+    <releaseNotes>Fix fields with nothing after the = behaving badly. GetFloat(s) is now GetDouble(s).</releaseNotes>
     <copyright>Copyright © 2017</copyright>
     <tags>stalker ltx .ltx</tags>
   </metadata>
