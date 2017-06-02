@@ -12,7 +12,7 @@ namespace LtxParser
         public readonly string Name;
         private Dictionary<string, string> fields = new Dictionary<string, string>();
 
-        public Section(string name)
+        internal Section(string name)
         {
             Name = name;
         }
@@ -30,9 +30,9 @@ namespace LtxParser
             }
         }
 
-        public bool ContainsField(string key)
+        public bool ContainsField(string field)
         {
-            return fields.ContainsKey(key);
+            return fields.ContainsKey(field);
         }
 
 
