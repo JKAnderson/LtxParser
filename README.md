@@ -3,6 +3,20 @@ A C# library for loading .ltx files, trees, and ltx-formatted strings from the S
 It also handles ACDC's special <<END...END block syntax if you're into that sort of thing.  
 You can [get it from NuGet.](https://www.nuget.org/packages/LtxParser/)
 
+# Example Use
+```
+List<string> weaponsWithScopes = new List<string>();
+Config config = Config.ReadModLtx(@"C:\AMK\gamedata\config", @"C:\Vanilla\gamedata\config", "system.ltx");
+foreach (Section section in config)
+{
+    if (section.ContainsField("scope_status") && section.GetInt("scope_status") > 0)
+    {
+        weaponsWithScopes.Add(section.Name);
+    }
+}
+// Congrats, now you have a list of weapons that can use scopes for some reason
+```
+
 # Classes
 ## Config
 Represents an entire loaded config tree. Indexable by section names. Iterable by sections.
