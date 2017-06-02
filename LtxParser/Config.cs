@@ -218,7 +218,8 @@ namespace LtxParser
 
         public IEnumerator<Section> GetEnumerator()
         {
-            yield return Default;
+            if (Default.Count > 0)
+                yield return Default;
             foreach (Section section in sections.Values)
                 yield return section;
         }

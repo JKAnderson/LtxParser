@@ -30,6 +30,14 @@ namespace LtxParser
             }
         }
 
+        public int Count
+        {
+            get
+            {
+                return fields.Count;
+            }
+        }
+
         public bool ContainsField(string field)
         {
             return fields.ContainsKey(field);
@@ -66,7 +74,7 @@ namespace LtxParser
                 list.Add(toBool(value));
             return list;
         }
-        
+
         /// <summary>
         /// Parse a floating point value.
         /// </summary>
