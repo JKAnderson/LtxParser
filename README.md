@@ -52,6 +52,9 @@ Represents one section of a config. Indexable by field names. Iterable by fields
 string Name
 + The section name it was loaded from.
 
+int Count
++ The number of fields in this section.
+
 bool ContainsField(string field)
 + Returns true if the field exists in this section.
 
