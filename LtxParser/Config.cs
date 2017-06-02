@@ -50,7 +50,7 @@ namespace LtxParser
         private static readonly Regex commentRx = new Regex("^[^;]+");
         private static readonly Regex includeRx = new Regex(@"^#include\s*""(?<directory>.+\\)?(?<file>.+)""$");
         private static readonly Regex sectionRx = new Regex(@"^\[(?<section>[^\]]+)\](?:\:(?<inherits>.+))?");
-        private static readonly Regex fieldRx = new Regex(@"^(?<field>.+?)(?:\s*\=\s*(?<value>.+))?$");
+        private static readonly Regex fieldRx = new Regex(@"^(?<field>.+?)(?:\s*\=\s*(?<value>.*))?$");
         private static readonly Regex listRx = new Regex(@"[^\s,]+");
 
         private enum ConfigMode

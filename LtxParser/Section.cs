@@ -66,12 +66,11 @@ namespace LtxParser
                 list.Add(toBool(value));
             return list;
         }
-
-        // I'm still calling it "float" for the sake of consistency with xray
+        
         /// <summary>
         /// Parse a floating point value.
         /// </summary>
-        public double GetFloat(string field)
+        public double GetDouble(string field)
         {
             return Convert.ToDouble(fields[field]);
         }
@@ -79,7 +78,7 @@ namespace LtxParser
         /// <summary>
         /// Parse a comma/whitespace-separated list of floating point values.
         /// </summary>
-        public List<double> GetFloats(string field)
+        public List<double> GetDoubles(string field)
         {
             List<double> list = new List<double>();
             foreach (string value in Regex.Split(fields[field], @"[,\s]+"))
